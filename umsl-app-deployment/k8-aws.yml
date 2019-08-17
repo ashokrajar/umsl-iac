@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umsl-app-lb
+spec:
+  selector:
+    app: umsl-app
+  ports:
+    - name: umsl-app-lb
+      protocol: TCP
+      port: 80
+      targetPort: 8081
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+    - 0.0.0.0/0
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umsl-app
+spec:
+  selector:
+    matchLabels:
+      app: umsl-app
+  strategy:
+    type: Recreate
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: umsl-app
+    spec:
+      containers:
+        - name: umsl-app
+          image: 713682226939.dkr.ecr.ap-south-1.amazonaws.com/emirates/umsl-app:latest
+          ports:
+            - containerPort: 8081
